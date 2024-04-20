@@ -1,8 +1,14 @@
 import './App.css'
-import ObserveButton from './components/ObserveButton'
+import EventClickButton from './components/EventClickButton'
+import ObservableComponent from './components/ObservableComponent'
 
 function App() {
-  return <ObserveButton />
+  return (
+    <>
+      <EventClickButton />
+      <ObservableComponent />
+    </>
+  )
 }
 
 export default App

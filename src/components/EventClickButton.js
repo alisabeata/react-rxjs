@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { fromEvent } from 'rxjs'
 import { throttleTime, map } from 'rxjs/operators'
 
-const ObserveButton = () => {
+const EventClickButton = () => {
   const buttonRef = useRef(null)
 
   useEffect(() => {
@@ -22,7 +22,7 @@ const ObserveButton = () => {
     }
   }, [])
 
-  return <button ref={buttonRef}>Click me</button>
+  return <button ref={buttonRef}>Get Time Stamp</button>
 }
 
-export default ObserveButton
+export default EventClickButton

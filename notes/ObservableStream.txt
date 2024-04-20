@@ -1,0 +1,63 @@
+//Creating an Observable for the Fetch Request
+
+1. Observable Creation: The from function converts the promise returned 
+   by fetch into an Observable.
+2. Handling the Response: concatMap is used to flatten and handle the 
+   response. If the response is OK, it checks for a body and reads the 
+   stream; otherwise, it emits an error.
+3. Error Handling: catchError is used to catch and handle any errors 
+   that occur during the fetch operation or stream processing.
+4. Subscription Management: The component subscribes to the Observable 
+   to handle the messages. This subscription is managed within the React 
+   component's lifecycle to avoid memory leaks.
+
+import { useCallback, useContext } from 'react';
+import { from, of } from 'rxjs';
+import { catchError, concatMap } from 'rxjs/operators';
+import { DispatcherContext } from './path/to/your/context'; // Update the import path accordingly
+
+const addMessage = useCallback((message, accessKey) => {
+  const { dispatch } = useContext(DispatcherContext);
+
+  // Dispatch the initial action
+  dispatch({
+    type: 'ADD_MESSAGE',
+    payload: message,
+  });
+
+  // Create an Observable from the fetch request
+  const postMessage$ = from(fetch(`${process.env.REACT_APP_API_ENDPOINT}/chat_sessions/${accessKey}/messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.REACT_APP_KEY}`,
+    },
+    body: JSON.stringify({ message: message.text[0] }),
+  })).pipe(
+    concatMap(response => {
+      if (!response.ok) {
+        throw new Error('Failed to add message');
+      }
+      return response.body ? from(readStream(response)) : of('ReadableStream not supported');
+    }),
+    catchError(error => {
+      console.error('Error adding message:', error);
+      return of(`Error: ${error.message}`);
+    })
+  );
+
+  // Subscribe to the Observable and handle the stream
+  const subscription = postMessage$.subscribe({
+    next: text => {
+      showBotMessage(text, 'stream'); // Assuming showBotMessage is handling displaying messages
+    },
+    error: err => console.error('Stream error:', err),
+    complete: () => {
+      showBotMessage('', 'close');
+    }
+  });
+
+  return () => {
+    subscription.unsubscribe(); // Ensure to clean up the subscription
+  };
+}, [showBotMessage]);
