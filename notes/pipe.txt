@@ -1,0 +1,15 @@
+import { from } of 'rxjs';
+import { filter, map } from 'rxjs/operators';
+
+// Create an Observable from an array
+const source$ = from([1, 2, 3, 4, 5]);
+
+// Use pipe to apply multiple operators
+const modified$ = source$.pipe(
+  filter(x => x % 2 === 0),  // Keep only even numbers
+  map(x => x * 10)           // Multiply each remaining number by 10
+);
+
+// Subscribe to the resulting Observable
+modified$.subscribe(value => console.log(value));
+// Output will be: 20, 40
