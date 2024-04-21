@@ -1,3 +1,16 @@
+// pipe
+// - map
+// - filter
+// - debounce time
+// - reduce
+// - scan
+// - of (not in the pipe context, creates collections)
+// - pluck
+// - distinctUntilChanged
+
+
+
+// map 
 import { from } of 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
@@ -13,3 +26,168 @@ const modified$ = source$.pipe(
 // Subscribe to the resulting Observable
 modified$.subscribe(value => console.log(value));
 // Output will be: 20, 40
+
+
+
+// filter
+import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
+
+// Creating a basic Observable that emits numbers from 1 to 10
+const numberObservable = new Observable(subscriber => {
+  for (let i = 1; i <= 10; i++) {
+    subscriber.next(i);
+  }
+  subscriber.complete();
+});
+
+// Applying a filter to only pass even numbers
+const evenNumberObservable = numberObservable.pipe(
+  filter(value => value % 2 === 0)
+);
+
+// Exporting the observables so they can be used elsewhere in the application
+export { numberObservable, evenNumberObservable };
+
+
+// debounce time
+
+import { fromEvent } from 'rxjs';
+import { debounceTime, map } from 'rxjs/operators';
+
+const searchBox = document.getElementById('searchBox');
+
+const searchBox$ = fromEvent(searchBox, 'input').pipe(
+  map(event => event.target.value), // Extract the text from the input event
+  debounceTime(300)                // Wait for 300 milliseconds of inactivity
+);
+
+searchBox$.subscribe(value => {
+  console.log(`API call for: ${value}`); // API call or other actions here
+});
+
+
+// reduce
+reduce waits until the source observable completes, and then it emits a single value that is the result of applying a reducer function to each item emitted by the source.
+
+import { of } from 'rxjs';
+import { reduce } from 'rxjs/operators';
+
+const numbers = of(1, 2, 3, 4, 5);
+const sumWithReduce = numbers.pipe(
+  reduce((acc, curr) => acc + curr, 0)
+);
+
+sumWithReduce.subscribe(total => console.log(total));
+
+15  // Only emitted once, after all items have been processed
+
+// scan
+scan emits the current accumulated value every time the source observable emits a value.
+
+import { of } from 'rxjs';
+import { scan } from 'rxjs/operators';
+
+const numbers = of(1, 2, 3, 4, 5);
+const sumWithScan = numbers.pipe(
+  scan((acc, curr) => acc + curr, 0)
+);
+
+sumWithScan.subscribe(total => console.log(total));
+
+1  // After first item
+3  // 1 + 2
+6  // 1 + 2 + 3
+10 // 1 + 2 + 3 + 4
+15 // 1 + 2 + 3 + 4 + 5
+
+
+
+// of
+
+import { of } from 'rxjs';
+
+// Create an observable that emits three values
+const observable = of(1, 2, 3);
+
+observable.subscribe({
+  next: value => console.log(value),
+  complete: () => console.log('Completed')
+});
+
+
+1
+2
+3
+Completed
+
+
+// pluck
+
+import { of } from 'rxjs';
+import { pluck } from 'rxjs/operators';
+
+// An observable of user objects with nested address
+const usersWithAddress$ = of(
+  { name: 'Alice', age: 25, address: { city: 'New York', country: 'USA' } },
+  { name: 'Bob', age: 30, address: { city: 'Los Angeles', country: 'USA' } },
+  { name: 'Charlie', age: 35, address: { city: 'London', country: 'UK' } }
+);
+
+// Using pluck to extract the city from address
+const cities$ = usersWithAddress$.pipe(
+  pluck('address', 'city')
+);
+
+cities$.subscribe(city => console.log(city));
+
+
+New York
+Los Angeles
+London
+
+
+
+import { of } from 'rxjs';
+import { pluck } from 'rxjs/operators';
+
+// Observable of user objects with an array of emails
+const usersWithEmails$ = of(
+  { name: 'Alice', emails: ['alice@example.com', 'alice@gmail.com'] },
+  { name: 'Bob', emails: ['bob@example.com', 'bob@yahoo.com'] }
+);
+
+// Using pluck to get the first email of each user
+const firstEmails$ = usersWithEmails$.pipe(
+  pluck('emails', 0)  // Accessing the first element of the emails array
+);
+
+firstEmails$.subscribe(email => console.log(email));
+
+alice@example.com
+bob@example.com
+
+
+
+// distinctUntilChanged
+
+import { of } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
+
+// Observable emitting numbers
+const numbers$ = of(1, 1, 2, 2, 2, 3, 4, 4, 5, 1);
+
+// Applying distinctUntilChanged
+const distinctNumbers$ = numbers$.pipe(
+  distinctUntilChanged()
+);
+
+distinctNumbers$.subscribe(value => console.log(value));
+
+
+1
+2
+3
+4
+5
+1
