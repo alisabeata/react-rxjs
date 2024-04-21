@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react'
 import { Observable } from 'rxjs'
 
+// by convention observable name should contain $ after the name
+// observable$
+
 const ObservableComponent = () => {
   useEffect(() => {
     // Create a new Observable instance that emits values
-    const observable = new Observable((subscriber) => {
+    const observable$ = new Observable((subscriber) => {
       // Emitting a value
       subscriber.next('Hello')
       subscriber.next('World')
@@ -20,7 +23,7 @@ const ObservableComponent = () => {
     })
 
     // Subscribe to the observable to receive the emitted values
-    const subscription = observable.subscribe({
+    const subscription = observable$.subscribe({
       next(x) {
         console.log('Received Value: ' + x)
       },
