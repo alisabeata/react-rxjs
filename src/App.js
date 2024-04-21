@@ -5,6 +5,7 @@ import ObservableComponent from './components/ObservableComponent'
 import SubjectComponent from './components/SubjectComponent'
 import MergeMapTwoInputs from './components/MergeMapTwoInputs'
 import SwitchMapRestartInterval from './components/SwitchMapRestartInterval'
+import BehaviorSubjectComponent from './components/BehaviorSubjectComponent'
 
 function App() {
   const [isHidden, setIsHidden] = useState(false)
@@ -21,6 +22,7 @@ function App() {
       <SubjectComponent />
       <MergeMapTwoInputs />
       <SwitchMapRestartInterval />
+      <BehaviorSubjectComponent />
     </>
   )
 }
