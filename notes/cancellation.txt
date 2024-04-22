@@ -1,0 +1,68 @@
+// ajax
+
+import { ajax } from 'rxjs/ajax';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+
+const cancel$ = new Subject();  // This Subject is used to trigger cancellation
+
+const request$ = ajax({
+    url: 'https://api.example.com/data',
+    method: 'GET',
+}).pipe(
+    takeUntil(cancel$)  // This will unsubscribe and cancel the request when cancel$ emits
+);
+
+const subscription = request$.subscribe({
+    next: response => console.log('Data:', response),
+    error: err => console.error('Error:', err),
+    complete: () => console.log('Request completed or canceled')
+});
+
+// Function to cancel the request
+function cancelRequest() {
+    cancel$.next();  // Emitting a value triggers the cancellation
+    cancel$.complete();  // Optionally complete the cancel$ subject
+}
+
+// Simulate canceling the request after a short delay
+setTimeout(cancelRequest, 2000);  // Cancel the request after 2 seconds
+
+
+// fromFetch
+
+import { fromFetch } from 'rxjs/fetch';
+import { takeUntil, switchMap } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+
+const cancel$ = new Subject();
+const controller = new AbortController();  // AbortController to handle cancellation
+
+const request$ = fromFetch('https://api.example.com/data', {
+    signal: controller.signal  // Pass the AbortController's signal to fetch
+}).pipe(
+    switchMap(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to fetch');
+        }
+    }),
+    takeUntil(cancel$)  // Still use takeUntil to handle unsubscription
+);
+
+const subscription = request$.subscribe({
+    next: data => console.log('Data:', data),
+    error: err => console.error('Error:', err),
+    complete: () => console.log('Request completed or canceled')
+});
+
+// Function to cancel the request
+function cancelRequest() {
+    controller.abort();  // Abort the fetch request
+    cancel$.next();  // Trigger unsubscription
+    cancel$.complete();  // Optionally complete the cancel$ subject
+}
+
+// Simulate canceling the request after a short delay
+setTimeout(cancelRequest, 2000);  // Cancel the request after 2 seconds
