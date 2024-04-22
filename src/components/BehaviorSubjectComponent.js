@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { BehaviorSubject } from 'rxjs'
 
+// store.js
 // Create a BehaviorSubject with an initial loading state
-const userDataSubject = new BehaviorSubject({
+const userDataSubject$ = new BehaviorSubject({
   loading: true,
   data: null,
   error: null,
@@ -13,19 +14,20 @@ function fetchUserData() {
   fetch('https://jsonplaceholder.typicode.com/users/1')
     .then((response) => response.json())
     .then((data) => {
-      userDataSubject.next({ loading: false, data, error: null })
+      userDataSubject$.next({ loading: false, data, error: null })
     })
     .catch((error) => {
-      userDataSubject.next({ loading: false, data: null, error })
+      userDataSubject$.next({ loading: false, data: null, error })
     })
 }
 
+// UserDataComponent.js
 const UserDataComponent = () => {
-  const [userData, setUserData] = useState(userDataSubject.getValue())
+  const [userData, setUserData] = useState(userDataSubject$.getValue())
 
   useEffect(() => {
     // Subscribe to the BehaviorSubject
-    const subscription = userDataSubject.subscribe({
+    const subscription = userDataSubject$.subscribe({
       next: (state) => setUserData(state),
       error: (err) => console.error('Error:', err),
       complete: () => console.log('Stream completed'),

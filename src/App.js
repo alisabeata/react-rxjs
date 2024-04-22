@@ -6,6 +6,7 @@ import SubjectComponent from './components/SubjectComponent'
 import MergeMapTwoInputs from './components/MergeMapTwoInputs'
 import SwitchMapRestartInterval from './components/SwitchMapRestartInterval'
 import BehaviorSubjectComponent from './components/BehaviorSubjectComponent'
+import SearchComponent from './components/SearchComponent'
 
 function App() {
   const [isHidden, setIsHidden] = useState(false)
@@ -23,6 +24,7 @@ function App() {
       <MergeMapTwoInputs />
       <SwitchMapRestartInterval />
       <BehaviorSubjectComponent />
+      <SearchComponent />
     </>
   )
 }
